@@ -1,5 +1,6 @@
 [flake8]
 exclude =
     migrations,
-    __pycache__
+    __pycache__,
+    settings.py
 max-line-length = 88
