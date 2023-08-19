@@ -8,7 +8,7 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-from core.models import Video
+from core.models import Video, UserVideoRelation
 from core.utils import NoVideosException
 
 
@@ -286,3 +286,21 @@ class VideoTests(TestCase):
 
         is_added = Video.objects.filter(url=url).count() > 1
         self.assertFalse(is_added)
+
+
+class UserVideoRelationModelTests(TestCase):
+    """Tests for UserVideoRelation model."""
+
+    def test_user_can_collect_video(self):
+        """Test user can collect a video."""
+        user = get_user_model().objects.create(
+            email="test@example.com", password="pass123", username="testuser"
+        )
+        video = create_video()
+
+        user_video = UserVideoRelation.objects.create(user=user, video=video)
+
+        expected_str = (
+            f"{user.email} collected {video.title} on {datetime.date.today()}"
+        )
+        self.assertEqual(str(user_video), expected_str)
