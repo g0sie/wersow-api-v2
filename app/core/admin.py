@@ -9,6 +9,16 @@ from django.utils.translation import gettext_lazy as _
 from core import models
 
 
+class VideoInline(admin.TabularInline):
+    """List of videos in user admin page."""
+
+    model = models.UserVideoRelation
+    ordering = ["-collected"]
+    fields = ["video", "collected"]
+    readonly_fields = ["collected"]
+    verbose_name = "Video"
+
+
 class UserAdmin(BaseUserAdmin):
     """Define the admin pages for users."""
 
@@ -25,6 +35,7 @@ class UserAdmin(BaseUserAdmin):
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
     readonly_fields = ["last_login", "date_joined"]
+    inlines = [VideoInline]
     add_fieldsets = (
         (
             None,
@@ -44,4 +55,21 @@ class UserAdmin(BaseUserAdmin):
     )
 
 
+class VideoAdmin(admin.ModelAdmin):
+    """Define Video in django-admin."""
+
+    ordering = ["-todays", "-publish_date"]
+    search_fields = ["title", "publish_date"]
+    list_display = ["title", "publish_date", "todays"]
+
+
+class UserVideoRelationAdmin(admin.ModelAdmin):
+    """Define UserVideoRelation in django-admin."""
+
+    ordering = ["-collected"]
+    list_display = ["user", "video", "collected"]
+
+
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Video, VideoAdmin)
+admin.site.register(models.UserVideoRelation, UserVideoRelationAdmin)

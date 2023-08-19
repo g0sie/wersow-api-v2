@@ -1,9 +1,11 @@
 """
 Database models.
 """
+import datetime
 from random import randint
 from pytube import YouTube
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -142,3 +144,18 @@ class Video(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class UserVideoRelation(models.Model):
+    """Model to store videos collected by user."""
+
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="collection"
+    )
+    video = models.ForeignKey(
+        Video, on_delete=models.CASCADE, related_name="collection"
+    )
+    collected = models.DateField(default=datetime.date.today)
+
+    def __str__(self):
+        return f"{self.user} collected {self.video} on {self.collected}"
